@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Padel Score</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#f4f6f8;color:#222;padding:16px}
+.app{max-width:480px;margin:0 auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 25px rgba(0,0,0,.08)}
+h1{text-align:center}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.team{background:#f0f3f7;border-radius:16px;padding:14px;text-align:center}
+.team input{width:100%;padding:10px;border:none;border-radius:10px;text-align:center}
+.score{font-size:44px;font-weight:bold}
+.games{font-size:18px;margin:8px 0}
+button{width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:8px}
+.add{background:#2ecc71;color:white}
+.remove{background:#ffcc00}
+.reset{background:#e74c3c;color:white;margin-top:20px}
+.status{text-align:center;font-size:18px;font-weight:bold;margin:20px 0 10px;padding:12px;background:#eef6ff;border-radius:12px}
+.sets{text-align:center;font-size:18px;margin-bottom:10px}
+@media (max-width:420px){.teams{grid-template-columns:1fr}.score{font-size:52px}}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>Padel Score</h1>
+<div class="sets">Сеты: <span id="setsA">0</span> - <span id="setsB">0</span></div>
+<div class="status" id="status">Начинаем матч</div>
+<div class="teams">
+<div class="team">
+<input id="teamA" value="Команда A" />
+<div class="games">Геймы: <span id="gamesA">0</span></div>
+<div class="score" id="scoreA">0</div>
+<button class="add" onclick="addPoint('A')">+ Очко</button>
+<button class="remove" onclick="removePoint('A')">- Очко</button>
+</div>
+<div class="team">
+<input id="teamB" value="Команда B" />
+<div class="games">Геймы: <span id="gamesB">0</span></div>
+<div class="score" id="scoreB">0</div>
+<button class="add" onclick="addPoint('B')">+ Очко</button>
+<button class="remove" onclick="removePoint('B')">- Очко</button>
+</div>
+</div>
+<button class="reset" onclick="resetMatch()">Сбросить матч</button>
+</div>
+<script>
+const points=["0","15","30","40"];
+let pointA=0,pointB=0,gamesA=0,gamesB=0,setsA=0,setsB=0;
+function addPoint(team){if(team==="A")pointA++;else pointB++;checkGame();updateDisplay();}
+function removePoint(team){if(team==="A"&&pointA>0)pointA--;if(team==="B"&&pointB>0)pointB--;updateDisplay();}
+function checkGame(){
+if(pointA>=4&&pointA-pointB>=2){gamesA++;resetPoints();checkSet();}
+if(pointB>=4&&pointB-pointA>=2){gamesB++;resetPoints();checkSet();}
+}
+function checkSet(){
+if(gamesA>=6&&gamesA-gamesB>=2){setsA++;gamesA=0;gamesB=0;}
+if(gamesB>=6&&gamesB-gamesA>=2){setsB++;gamesA=0;gamesB=0;}
+}
+function resetPoints(){pointA=0;pointB=0;}
+function getScore(){
+if(pointA>=3&&pointB>=3){
+if(pointA===pointB)return["40","40","Ровно"];
+if(pointA>pointB)return["AD","40","Больше у команды A"];
+return["40","AD","Больше у команды B"];
+}
+return[(points[pointA]||"40"),(points[pointB]||"40"),"Игра продолжается"];
+}
+function updateDisplay(){
+const [scoreA,scoreB,status]=getScore();
+document.getElementById("scoreA").textContent=scoreA;
+document.getElementById("scoreB").textContent=scoreB;
+document.getElementById("gamesA").textContent=gamesA;
+document.getElementById("gamesB").textContent=gamesB;
+document.getElementById("setsA").textContent=setsA;
+document.getElementById("setsB").textContent=setsB;
+document.getElementById("status").textContent=status;
+}
+function resetMatch(){pointA=0;pointB=0;gamesA=0;gamesB=0;setsA=0;setsB=0;updateDisplay();}
+updateDisplay();
+</script>
+</body>
+</html>
